@@ -286,6 +286,9 @@ plt.show()
   print("Accuracy:", accuracy_score(y_val, y_pred))
   print("Classification Report:\n", classification_report(y_val, y_pred))
   ```
+  
+  <img width="932" height="118" alt="image" src="https://github.com/user-attachments/assets/6b2d679a-6adb-4f4a-8a88-0a62d0f85b1b" />
+
 - Modeling approach: Classification / Regression / Clustering
   ```python
   # Apply a Machine Learning or Clustering Model====>>>>>I used classification
