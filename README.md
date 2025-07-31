@@ -368,9 +368,8 @@ An interactive dashboard was developed to visualize the analytical results. Key 
 - 📈 **Visuals**: Bar charts, pie charts, line graphs, scatter plots
   <img width="580" height="328" alt="image" src="https://github.com/user-attachments/assets/ba188bb0-37ef-4a9d-a94f-baa93a663f5a" />
   <img width="582" height="329" alt="image" src="https://github.com/user-attachments/assets/f66caabb-f8c6-460a-9064-e9e001cb3127" />
-- 🎚 **Filters & Slicers**: Date ranges, categories, dynamic comparisons
+- 🎚 **Filters,Slicers & DAX formulas**: Date ranges, categories, dynamic comparisons
   <img width="581" height="328" alt="image" src="https://github.com/user-attachments/assets/1a460f84-36aa-4987-9b5e-146538d7579b" />
-- 🧠 **Advanced Features**: DAX formulas, custom tooltips, bookmarks
   
 > 🖼️ **Screenshots** of the dashboard are available in the `/screenshots` folder.
 
