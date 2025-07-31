@@ -51,26 +51,48 @@ train_client= pd.read_csv('drive/MyDrive/train/client_train.csv', low_memory=Fal
 train_invoice= pd.read_csv('drive/MyDrive/train/invoice_train.csv', low_memory=False)
 test_invoice= pd.read_csv('drive/MyDrive/test/invoice_test.csv', low_memory=False)
 test_client=pd.read_csv('drive/MyDrive/test/client_test.csv', low_memory=False)
+```
+```python
 #First merge the dataset to have a common target client_id
 train_df = pd.merge(train_invoice, train_client, on='client_id')
 test_df = pd.merge(test_invoice, test_client, on='client_id')
+```
+```python
 #check column data types
 train_df.dtypes
 test_df.dtypes
+```
+<img width="937" height="349" alt="image" src="https://github.com/user-attachments/assets/4aa260af-5a21-4694-afcf-7e14c285f641" />
+
+```python
 train_df.isnull()
 test_df.isnull()
 # train_df.isnull().sum()
 # test_df.isnull().sum()
+```
+<img width="927" height="233" alt="image" src="https://github.com/user-attachments/assets/add20d9c-9b71-4041-b24b-d637ff591889" />
+
+```python
 # Data set Structure
 train_df.head()
 # Data set Structure
 test_df.head(10)
+```
+<img width="940" height="372" alt="image" src="https://github.com/user-attachments/assets/de8c6de7-efe9-44e8-8bff-170fbb9913b5" />
+
+```python
 train_df.describe()
 test_df.describe()
+```
+<img width="941" height="370" alt="image" src="https://github.com/user-attachments/assets/cd809481-2551-4a96-be9a-5eab2fe94d21" />
+
+```python
 # Check the shape (rows, columns)
 test_df.shape
 train_df.shape
 ```
+<img width="934" height="99" alt="image" src="https://github.com/user-attachments/assets/f95de2e6-dd3f-4755-9d95-5c08cb1aa05c" />
+
 - Missing value imputation
 ```python
 # 1. Clean the Dataset
@@ -110,10 +132,19 @@ def fill_categorical_missing(train_df: pd.DataFrame, test_df: pd.DataFrame, colu
 - Encoding & scaling
 
 ### 2. 📊 Exploratory Data Analysis (EDA)
-- Descriptive statistics
+- Descriptive statistics (Mean,max.min,std, eyc)
   ```python
-
+  #  Basic Descriptive Statistics
+  desc = train_df.describe(include='all')
+  print("Descriptive Statistics (Summary):")
+  print(desc)
   ```
+  <img width="932" height="368" alt="image" src="https://github.com/user-attachments/assets/4b3ba1ae-6e72-4625-b5db-ecfa5982b6a5" />
+
+  ```python
+  
+  ```
+  
 - Correlation heatmaps
  ```python
 import seaborn as sns
@@ -191,6 +222,8 @@ def plot_correlation_heatmap(
    # Plot improved correlation heatmap, showing only top 10 features
    plot_correlation_heatmap(train_df, max_features=10)
  ```
+<img width="941" height="311" alt="image" src="https://github.com/user-attachments/assets/efc61694-30e1-4145-bb35-2d13f533d6c4" />
+
 - Distribution plots
  ```python
    import seaborn as sns
@@ -219,6 +252,8 @@ plt.bar(x=fraudactivities.index, height=fraudactivities.values, tick_label = [0,
 plt.title('Fraud - Target Distribution')
 plt.show()
 ```
+<img width="931" height="292" alt="image" src="https://github.com/user-attachments/assets/c7907f02-ea51-4a3a-a11f-01d27873aa0b" />
+
 - Relationship visualizations
   ```python
   # from plotting_utils import encode_target_column, plot_correlation_heatmap
@@ -293,7 +328,23 @@ plt.show()
   print("Accuracy:", accuracy_score(y_val, y_pred))
   print("Classification Report:\n", classification_report(y_val, y_pred))
   ```
+  <img width="940" height="243" alt="image" src="https://github.com/user-attachments/assets/c4bea22d-88fb-416c-a736-be3c2033f345" />
+
 - Confusion Matrix or Summary Table
+```python
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+import matplotlib.pyplot as plt
+
+# Create confusion matrix
+cm = confusion_matrix(y_val, y_pred)
+
+# Display as a heatmap
+disp = ConfusionMatrixDisplay(confusion_matrix=cm)
+disp.plot(cmap='Blues')
+plt.title('Confusion Matrix')
+plt.show()
+```
+<img width="947" height="269" alt="image" src="https://github.com/user-attachments/assets/da206ccb-ae76-4f50-8e1d-a91c3854646b" />
 
 ### 5. 🛠️ Code Structure
 - Modularized functions and scripts  
