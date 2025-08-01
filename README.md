@@ -4,7 +4,7 @@
       <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
     </a>
     
-# Zindi utility fraud detection  
+# Smart Utility Fraud Detection with Python & Power BI  
 ## 💡 Capstone Project: Big Data Analytics
 
 ---
