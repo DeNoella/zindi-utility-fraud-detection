@@ -57,7 +57,7 @@ Submissions are evaluated on **Zindi** using classification metrics like **ROC-A
 **Sector:** Cybersecurity  
 **Problem Statement:** (Already Explained) <br>
 **Dataset Title:** Fraud Detection in Electricity and Gas Consumption Challenge  <br>
-**Number of Sataset:** 4 <br>
+**Number of Dataset:** 4 <br>
 **Source Link:** https://zindi.africa/competitions/fraud-detection-in-electricity-and-gas-consumption-challenge  <br>
 **Number of Rows and Columns:**  test_df ===> (1939730, 20)  train_df ===> (4476749, 21)  <br>
 **Data Structure:** Structured (CSV) <br>
