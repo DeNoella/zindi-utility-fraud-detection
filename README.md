@@ -1,0 +1,491 @@
+<html>
+  <body>
+    <a href="https://colab.research.google.com/drive/1s8hRDZQ71k_WMWmr99lVKWUoq-EMBpQl#scrollTo=9MexvIQyAW_y">
+      <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
+    </a>
+    
+# Smart Utility Fraud Detection with Python & Power BI  
+## 💡 Capstone Project: Big Data Analytics
+
+---
+
+## 🚀 Overview
+
+This project tackles the challenge of identifying fraudulent electricity and gas usage by customers. Using historical invoice and client data, we develop a classification model to predict the likelihood of fraud. 
+
+What makes this project **innovative** is that its effectiveness is evaluated in real time through the **Zindi platform**, where model performance is ranked on a public leaderboard as part of an official data science challenge.
+
+---
+
+## 🎯 Problem Statement
+
+> **How can STEG detect fraudulent activities from their customers while improving satisfaction and maintaining operational efficiency?**
+
+The objective is to classify customers into two categories:
+- **Fraudulent (1)**
+- **Not Fraudulent (0)**
+
+Using past behavior and billing data, we aim to identify suspicious patterns using supervised machine learning models.
+
+---
+
+## 🧠 Objectives
+
+- Build a machine learning model to classify potentially fraudulent customers.
+- Analyze consumption patterns, billing behavior, and customer profiles.
+- Improve fraud detection accuracy to support STEG (Tunisian Company of Electricity and Gas).
+
+---
+
+## 🛠️ Tools & Technologies
+
+- Python, Pandas, NumPy  
+- Scikit-learn, XGBoost, LightGBM  
+- Google Colab  
+- Zindi for model evaluation  
+
+---
+
+## 📊 Evaluation
+
+Submissions are evaluated on **Zindi** using classification metrics like **ROC-AUC**. The model's performance will determine the ranking on the leaderboard.
+
+---
+
+## 📊 Dataset Information and 🏷️ Sector of Focus
+
+**Sector:** Cybersecurity  
+**Problem Statement:** (Already Explained) <br>
+**Dataset Title:** Fraud Detection in Electricity and Gas Consumption Challenge  <br>
+**Number of Sataset:** 4 <br>
+**Source Link:** https://zindi.africa/competitions/fraud-detection-in-electricity-and-gas-consumption-challenge  <br>
+**Number of Rows and Columns:**  test_df ===> (1939730, 20)  train_df ===> (4476749, 21)  <br>
+**Data Structure:** Structured (CSV) <br>
+**Unstructured (Text, Images):** N/A <br>
+**Data Status:** Requires Preprocessing <br>
+
+---
+
+## 🧠 Python Analytics Tasks
+
+The Python notebook includes the following components:
+
+### 1. 🔧 Data Cleaning
+- Loading data using panda analysing dataset information
+```python
+import pandas as pd
+train_client= pd.read_csv('drive/MyDrive/train/client_train.csv', low_memory=False)
+train_invoice= pd.read_csv('drive/MyDrive/train/invoice_train.csv', low_memory=False)
+test_invoice= pd.read_csv('drive/MyDrive/test/invoice_test.csv', low_memory=False)
+test_client=pd.read_csv('drive/MyDrive/test/client_test.csv', low_memory=False)
+```
+```python
+#First merge the dataset to have a common target client_id
+train_df = pd.merge(train_invoice, train_client, on='client_id')
+test_df = pd.merge(test_invoice, test_client, on='client_id')
+```
+```python
+#check column data types
+train_df.dtypes
+test_df.dtypes
+```
+<img width="937" height="349" alt="image" src="https://github.com/user-attachments/assets/4aa260af-5a21-4694-afcf-7e14c285f641" />
+
+```python
+train_df.isnull()
+test_df.isnull()
+# train_df.isnull().sum()
+# test_df.isnull().sum()
+```
+<img width="927" height="233" alt="image" src="https://github.com/user-attachments/assets/add20d9c-9b71-4041-b24b-d637ff591889" />
+
+```python
+# Data set Structure
+train_df.head()
+# Data set Structure
+test_df.head(10)
+```
+<img width="940" height="372" alt="image" src="https://github.com/user-attachments/assets/de8c6de7-efe9-44e8-8bff-170fbb9913b5" />
+
+```python
+train_df.describe()
+test_df.describe()
+```
+<img width="941" height="370" alt="image" src="https://github.com/user-attachments/assets/cd809481-2551-4a96-be9a-5eab2fe94d21" />
+
+```python
+# Check the shape (rows, columns)
+test_df.shape
+train_df.shape
+```
+<img width="934" height="99" alt="image" src="https://github.com/user-attachments/assets/f95de2e6-dd3f-4755-9d95-5c08cb1aa05c" />
+
+- Missing value imputation
+```python
+# 1. Clean the Dataset
+# ▪ Handle missing values, inconsistent formats, and outliers
+# ▪ Apply necessary data transformations (e.g., encoding, scaling)
+
+import pandas as pd
+from typing import List
+
+def fill_numerical_missing(train_df: pd.DataFrame, test_df: pd.DataFrame, columns: List[str] = None) -> None:
+    """
+    Fill missing values in numerical columns with the mean of train_df.
+    """
+    if columns is None:
+        columns = train_df.select_dtypes(include='number').columns.tolist()
+    for col in columns:
+        mean_val = train_df[col].mean()
+        train_df[col].fillna(mean_val, inplace=True)
+        if col in test_df.columns:
+            test_df[col].fillna(mean_val, inplace=True)
+
+def fill_categorical_missing(train_df: pd.DataFrame, test_df: pd.DataFrame, columns: List[str] = None) -> None:
+    """
+    Fill missing values in categorical columns with the mode of train_df.
+    """
+    if columns is None:
+        columns = train_df.select_dtypes(include='object').columns.tolist()
+    for col in columns:
+        if train_df[col].isnull().any():
+            mode_val = train_df[col].mode()[0]
+            train_df[col].fillna(mode_val, inplace=True)
+            if col in test_df.columns:
+                test_df[col].fillna(mode_val, inplace=True)
+```
+- Format standardization  
+- Outlier detection and removal  
+- Encoding & scaling
+
+### 2. 📊 Exploratory Data Analysis (EDA)
+- Descriptive statistics (Mean,max.min,std, eyc)
+  ```python
+  #  Basic Descriptive Statistics
+  desc = train_df.describe(include='all')
+  print("Descriptive Statistics (Summary):")
+  print(desc)
+  ```
+  <img width="932" height="368" alt="image" src="https://github.com/user-attachments/assets/4b3ba1ae-6e72-4625-b5db-ecfa5982b6a5" />
+
+- Correlation heatmaps
+ ```python
+import seaborn as sns
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+
+def plot_correlation_heatmap(
+    df,
+    title="Correlation Heatmap",
+    max_features=None,
+    annot=True,
+    fmt=".2f",
+    figsize=(12, 8),
+    cmap="coolwarm",
+    annot_fontsize=10,
+    xtick_fontsize=12,
+    ytick_fontsize=12,
+    mask_upper=True,
+    min_corr_display=0.1
+):
+    """
+    Plots an improved, readable correlation heatmap, with options for column reduction and visibility.
+    
+    Args:
+        df (pd.DataFrame): Input DataFrame.
+        title (str): Title for the plot.
+        max_features (int, optional): Show only top N features most correlated with target.
+        annot (bool): Whether to annotate cells.
+        fmt (str): Annotation format.
+        figsize (tuple): Figure size.
+        cmap (str): Color map.
+        annot_fontsize (int): Font size for annotations.
+        xtick_fontsize (int): Font size for x-tick labels.
+        ytick_fontsize (int): Font size for y-tick labels.
+        mask_upper (bool): Show only lower triangle if True.
+        min_corr_display (float): Only show correlations above this absolute value.
+    """
+    corr = df.select_dtypes(include='number').corr()
+    
+    # Reduce columns if max_features is set
+    if max_features is not None and "target" in corr.columns:
+        top_features = corr["target"].abs().sort_values(ascending=False).head(max_features+1).index
+        corr = corr.loc[top_features, top_features]
+
+    # Mask upper triangle for clarity
+    mask = None
+    if mask_upper:
+        mask = np.triu(np.ones_like(corr, dtype=bool), k=1)
+    
+    # Only show significant correlations
+    display_corr = corr.copy()
+    display_corr[(abs(display_corr) < min_corr_display) & (display_corr != 1.0)] = np.nan
+
+    plt.figure(figsize=figsize)
+    ax = sns.heatmap(
+        display_corr,
+        annot=annot,
+        fmt=fmt,
+        cmap=cmap,
+        mask=mask,
+        annot_kws={"size": annot_fontsize},
+        cbar_kws={"shrink": 0.8}
+    )
+    plt.title(title, fontsize=16)
+    plt.xticks(fontsize=xtick_fontsize, rotation=45, ha='right')
+    plt.yticks(fontsize=ytick_fontsize, rotation=0)
+    plt.tight_layout()
+    plt.show()
+   # from plotting_utils import encode_target_column, plot_correlation_heatmap
+
+   # Encode target column if needed
+   train_df = encode_target_column(train_df, 'target')
+
+   # Plot improved correlation heatmap, showing only top 10 features
+   plot_correlation_heatmap(train_df, max_features=10)
+ ```
+<img width="917" height="302" alt="image" src="https://github.com/user-attachments/assets/680f0e30-0173-40ba-8ebe-953465d91acc" />
+
+- Distribution plots
+ ```python
+   import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Histogram of target
+sns.countplot(data=train_df, x='target')
+plt.title("Distribution of Target Variable")
+plt.xlabel("Target")
+plt.ylabel("Count")
+plt.show()
+
+# Distribution of numeric feature (example: 'amount')
+if 'amount' in train_df.columns:
+    sns.histplot(data=train_df, x='amount', bins=30, kde=True)
+    plt.title("Distribution of Amount")
+    plt.xlabel("Amount")
+    plt.ylabel("Frequency")
+    plt.show()
+ ```
+<img width="931" height="315" alt="image" src="https://github.com/user-attachments/assets/9afc1d2a-c84b-479b-8e94-13f301f98675" />
+
+```python
+#Visualize fraudulent activities
+fraudactivities = train_client.groupby(['target'])['client_id'].count()
+plt.bar(x=fraudactivities.index, height=fraudactivities.values, tick_label = [0,1])
+plt.title('Fraud - Target Distribution')
+plt.show()
+```
+<img width="931" height="292" alt="image" src="https://github.com/user-attachments/assets/c7907f02-ea51-4a3a-a11f-01d27873aa0b" />
+
+- Relationship visualizations
+  ```python
+  # Explore Relationships
+  # Target vs Numerical Features
+  # Boxplot: amount by target class
+  import seaborn as sns
+  import matplotlib.pyplot as plt
+  
+  def plot_boxplot_by_target(df, feature_col, target_col='target', title=None):
+      """
+      Plots a boxplot of a numeric feature by target class if the feature exists in the DataFrame.
+    
+    Args:
+        df (pd.DataFrame): Input DataFrame.
+        feature_col (str): Name of the numeric feature column.
+        target_col (str): Name of the target column (default: 'target').
+        title (str, optional): Title for the plot.
+    """
+    if feature_col in df.columns and target_col in df.columns:
+        sns.boxplot(data=df, x=target_col, y=feature_col)
+        plt.title(title or f"{feature_col.capitalize()} by {target_col.capitalize()} Class")
+        plt.xlabel(target_col.capitalize())
+        plt.ylabel(feature_col.capitalize())
+        plt.show()
+
+    # from plotting_utils import plot_count_by_category # This line caused the error
+
+    plot_count_by_category(train_df, 'client_catg', rotate_xticks=45) # Changed 'client_type' to 'client_catg' based on the available columns
+  ```
+<img width="938" height="215" alt="image" src="https://github.com/user-attachments/assets/607d836f-2c4b-476c-8fc8-4aac830094a0" />
+  
+   ```python
+  # Target Rate per Client (Optional Insight)
+  # Group by client_id to see average target value (e.g., for binary classification)
+  client_target_rate = train_df.groupby('client_id')['target'].mean().reset_index()
+  client_target_rate.columns = ['client_id', 'avg_target']
+  
+  # Histogram of average target per client
+  sns.histplot(client_target_rate['avg_target'], bins=20, kde=True)
+  plt.title("Average Target Rate per Client")
+  plt.show()
+  ```
+<img width="936" height="253" alt="image" src="https://github.com/user-attachments/assets/db15e72c-c5c3-45db-80fe-bc91fa796089" />
+
+
+### 3. 🤖 Modeling
+- Selected Model: **Random Forest**, KMeans, Linear Regression
+  ```python
+   from sklearn.ensemble import RandomForestClassifier
+  from sklearn.metrics import accuracy_score, classification_report
+  
+  # Train model
+  model = RandomForestClassifier(random_state=42)
+  model.fit(X_train, y_train)
+  
+  # Predict
+  y_pred = model.predict(X_val)
+  
+  # Evaluate
+  print("Accuracy:", accuracy_score(y_val, y_pred))
+  print("Classification Report:\n", classification_report(y_val, y_pred))
+  ```
+  
+  <img width="932" height="118" alt="image" src="https://github.com/user-attachments/assets/6b2d679a-6adb-4f4a-8a88-0a62d0f85b1b" />
+
+- Modeling approach: Classification / Regression / Clustering
+  ```python
+  # Apply a Machine Learning or Clustering Model====>>>>>I used classification
+  # Drop unnecessary columns (like IDs, if not useful for prediction)
+  X = train_df.drop(columns=['target', 'invoice_id', 'client_id'], errors='ignore')
+  y = train_df['target']
+  # Encode and Scale Features
+  from sklearn.preprocessing import LabelEncoder, StandardScaler
+  
+  # Label Encoding for categorical columns
+  for col in X.select_dtypes(include='object').columns:
+      le = LabelEncoder()
+      X[col] = le.fit_transform(X[col])
+  
+  # Scale numeric features
+  scaler = StandardScaler()
+  X = pd.DataFrame(scaler.fit_transform(X), columns=X.columns)
+  ```
+- Training and testing dataset splits
+  ```python
+  from sklearn.model_selection import train_test_split
+  X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2, random_state=42)
+  
+  ```
+
+### 4. 📈 Model Evaluation
+- Evaluation Metrics Used: Accuracy / Precision / Recall / RMSE / Silhouette Score
+  ```python
+    from sklearn.ensemble import RandomForestClassifier
+  from sklearn.metrics import accuracy_score, classification_report
+  
+  # Train model
+  model = RandomForestClassifier(random_state=42)
+  model.fit(X_train, y_train)
+  
+  # Predict
+  y_pred = model.predict(X_val)
+  
+  # Evaluate
+  print("Accuracy:", accuracy_score(y_val, y_pred))
+  print("Classification Report:\n", classification_report(y_val, y_pred))
+  ```
+  <img width="940" height="243" alt="image" src="https://github.com/user-attachments/assets/c4bea22d-88fb-416c-a736-be3c2033f345" />
+
+- Confusion Matrix or Summary Table
+```python
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+import matplotlib.pyplot as plt
+
+# Create confusion matrix
+cm = confusion_matrix(y_val, y_pred)
+
+# Display as a heatmap
+disp = ConfusionMatrixDisplay(confusion_matrix=cm)
+disp.plot(cmap='Blues')
+plt.title('Confusion Matrix')
+plt.show()
+```
+<img width="947" height="269" alt="image" src="https://github.com/user-attachments/assets/da206ccb-ae76-4f50-8e1d-a91c3854646b" />
+
+### 5. 🛠️ Code Structure
+- Modularized functions and scripts  
+- Rich markdown explanations and inline comments  
+- Easy to follow and reproducible
+
+### 6. 🌟 Innovation
+
+#### 📊 Model Performance on Zindi
+ After submitting my predictions to the Fraud Detection in Electricity and Gas Consumption challenge on Zindi, my model achieved a score of 0.80 (80%) on the evaluation metric, which is the Area Under the ROC Curve (AUC).
+
+##### What does this mean?
+An AUC score of 0.80 indicates that the model can correctly distinguish between fraudulent and non-fraudulent clients 80% of the time.
+This reflects a strong ability to predict fraud risk, significantly better than random guessing (which would score around 0.5 or 50%).
+
+##### Why is this important?
+A high AUC means the utility company can confidently use the model to flag suspicious accounts, helping to reduce losses from fraud and improve resource allocation.
+
+<img width="946" height="419" alt="image" src="https://github.com/user-attachments/assets/7ec29bc5-5075-4b80-8a9f-0f8f600d347d" />
+
+---
+
+## 📌 Power BI Dashboard
+
+An interactive dashboard was developed to visualize the analytical results. Key features include:
+
+- 📌 **Overview Page**: Project context and summary insights
+  <img width="580" height="325" alt="image" src="https://github.com/user-attachments/assets/8a5d0986-2bd5-4cbc-9972-2ccd889361b3" />
+- 📈 **Visuals**: Bar charts, pie charts, line graphs, scatter plots
+  <img width="580" height="328" alt="image" src="https://github.com/user-attachments/assets/ba188bb0-37ef-4a9d-a94f-baa93a663f5a" />
+  <img width="582" height="329" alt="image" src="https://github.com/user-attachments/assets/f66caabb-f8c6-460a-9064-e9e001cb3127" />
+- 🎚 **Filters,Slicers & DAX formulas**: Date ranges, categories, dynamic comparisons
+  <img width="581" height="328" alt="image" src="https://github.com/user-attachments/assets/1a460f84-36aa-4987-9b5e-146538d7579b" />
+  
+> 🖼️ **Screenshots** of the dashboard are available in the `/screenshots` folder.
+
+---
+## Recommendations & Insights: Data-Driven Suggestions
+
+### Prioritize High-Risk Accounts for Inspection
+Use model risk scores to focus field audits and investigations on accounts most likely to commit fraud, optimizing resource allocation.
+
+### Implement Real-Time Consumption Monitoring
+Deploy automated systems to flag and alert unusual or suspicious usage patterns as they happen, enabling quick intervention.
+
+### Enhance Customer Verification Processes
+Strengthen onboarding and periodic re-verification for customer segments or meter types with elevated fraud risk.
+
+### Develop Fraud Awareness Campaigns
+Launch educational initiatives targeting high-risk groups to inform them about fraud consequences and promote honest consumption reporting.
+
+### Continuously Update the Detection Model
+Regularly retrain your fraud detection model with new data and confirmed fraud cases to adapt to evolving fraud tactics and maintain high accuracy.
+
+---
+
+## 🗂️ Repository Structure
+
+```bash
+📁 capstone-big-data-project/
+├── data/
+│   └── dataset.csv
+├── notebooks/
+│   └── analysis.ipynb
+├── powerbi/
+│   └── dashboard.pbix
+├── screenshots/
+│   └── dashboard-preview.png
+├── presentation/
+│   └── capstone-presentation.pptx
+├── README.md
+└── requirements.txt
+```
+## 🤝 Acknowledgments
+
+This project is part of the [Zindi Fraud Detection Challenge](https://zindi.africa/), in partnership with **STEG**.
+
+---
+
+## License
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+</body>
+</html>
