@@ -6,14 +6,17 @@
     
 # Zindi utility fraud detection  
 ## 💡 Capstone Project: Big Data Analytics
----
-
-## 📘 Project Overview
-This project was developed as part of the **Zindi Fraud Detection Challenge**. The goal is to build a machine learning classification model capable of predicting the likelihood of customers committing fraud based on their electricity and gas consumption patterns.
-
-The challenge is hosted by **Zindi** in collaboration with **The Tunisian Company of Electricity and Gas (STEG)**, which has experienced significant losses due to fraudulent activities from customers. The solution leverages historical client and invoice data to train a predictive model that can help detect future fraud risks proactively.
 
 ---
+
+## 🚀 Overview
+
+This project tackles the challenge of identifying fraudulent electricity and gas usage by customers. Using historical invoice and client data, we develop a classification model to predict the likelihood of fraud. 
+
+What makes this project **innovative** is that its effectiveness is evaluated in real time through the **Zindi platform**, where model performance is ranked on a public leaderboard as part of an official data science challenge.
+
+---
+
 ## 🎯 Problem Statement
 
 > **How can STEG detect fraudulent activities from their customers while improving satisfaction and maintaining operational efficiency?**
@@ -26,11 +29,35 @@ Using past behavior and billing data, we aim to identify suspicious patterns usi
 
 ---
 
+## 🧠 Objectives
+
+- Build a machine learning model to classify potentially fraudulent customers.
+- Analyze consumption patterns, billing behavior, and customer profiles.
+- Improve fraud detection accuracy to support STEG (Tunisian Company of Electricity and Gas).
+
+---
+
+## 🛠️ Tools & Technologies
+
+- Python, Pandas, NumPy  
+- Scikit-learn, XGBoost, LightGBM  
+- Google Colab  
+- Zindi for model evaluation  
+
+---
+
+## 📊 Evaluation
+
+Submissions are evaluated on **Zindi** using classification metrics like **ROC-AUC**. The model's performance will determine the ranking on the leaderboard.
+
+---
+
 ## 📊 Dataset Information and 🏷️ Sector of Focus
 
 **Sector:** Cybersecurity  
 **Problem Statement:** (Already Explained) <br>
 **Dataset Title:** Fraud Detection in Electricity and Gas Consumption Challenge  <br>
+**Number of Sataset:** 4 <br>
 **Source Link:** https://zindi.africa/competitions/fraud-detection-in-electricity-and-gas-consumption-challenge  <br>
 **Number of Rows and Columns:**  test_df ===> (1939730, 20)  train_df ===> (4476749, 21)  <br>
 **Data Structure:** Structured (CSV) <br>
@@ -141,10 +168,6 @@ def fill_categorical_missing(train_df: pd.DataFrame, test_df: pd.DataFrame, colu
   ```
   <img width="932" height="368" alt="image" src="https://github.com/user-attachments/assets/4b3ba1ae-6e72-4625-b5db-ecfa5982b6a5" />
 
-  ```python
-  
-  ```
-  
 - Correlation heatmaps
  ```python
 import seaborn as sns
@@ -222,7 +245,7 @@ def plot_correlation_heatmap(
    # Plot improved correlation heatmap, showing only top 10 features
    plot_correlation_heatmap(train_df, max_features=10)
  ```
-<img width="941" height="311" alt="image" src="https://github.com/user-attachments/assets/efc61694-30e1-4145-bb35-2d13f533d6c4" />
+<img width="917" height="302" alt="image" src="https://github.com/user-attachments/assets/680f0e30-0173-40ba-8ebe-953465d91acc" />
 
 - Distribution plots
  ```python
@@ -244,6 +267,7 @@ if 'amount' in train_df.columns:
     plt.ylabel("Frequency")
     plt.show()
  ```
+<img width="931" height="315" alt="image" src="https://github.com/user-attachments/assets/9afc1d2a-c84b-479b-8e94-13f301f98675" />
 
 ```python
 #Visualize fraudulent activities
@@ -256,18 +280,48 @@ plt.show()
 
 - Relationship visualizations
   ```python
-  # from plotting_utils import encode_target_column, plot_correlation_heatmap
-
-  # Encode target column if needed
-  train_df = encode_target_column(train_df, 'target')
+  # Explore Relationships
+  # Target vs Numerical Features
+  # Boxplot: amount by target class
+  import seaborn as sns
+  import matplotlib.pyplot as plt
   
-  # Plot improved correlation heatmap, showing only top 10 features
-  plot_correlation_heatmap(train_df, max_features=10)
-  # from plotting_utils import plot_count_by_category # This line caused the error
+  def plot_boxplot_by_target(df, feature_col, target_col='target', title=None):
+      """
+      Plots a boxplot of a numeric feature by target class if the feature exists in the DataFrame.
+    
+    Args:
+        df (pd.DataFrame): Input DataFrame.
+        feature_col (str): Name of the numeric feature column.
+        target_col (str): Name of the target column (default: 'target').
+        title (str, optional): Title for the plot.
+    """
+    if feature_col in df.columns and target_col in df.columns:
+        sns.boxplot(data=df, x=target_col, y=feature_col)
+        plt.title(title or f"{feature_col.capitalize()} by {target_col.capitalize()} Class")
+        plt.xlabel(target_col.capitalize())
+        plt.ylabel(feature_col.capitalize())
+        plt.show()
 
-  plot_count_by_category(train_df, 'client_catg', rotate_xticks=45) # Changed 'client_type' to 'client_catg' based on the available columns
-  
+    # from plotting_utils import plot_count_by_category # This line caused the error
+
+    plot_count_by_category(train_df, 'client_catg', rotate_xticks=45) # Changed 'client_type' to 'client_catg' based on the available columns
   ```
+<img width="938" height="215" alt="image" src="https://github.com/user-attachments/assets/607d836f-2c4b-476c-8fc8-4aac830094a0" />
+  
+   ```python
+  # Target Rate per Client (Optional Insight)
+  # Group by client_id to see average target value (e.g., for binary classification)
+  client_target_rate = train_df.groupby('client_id')['target'].mean().reset_index()
+  client_target_rate.columns = ['client_id', 'avg_target']
+  
+  # Histogram of average target per client
+  sns.histplot(client_target_rate['avg_target'], bins=20, kde=True)
+  plt.title("Average Target Rate per Client")
+  plt.show()
+  ```
+<img width="936" height="253" alt="image" src="https://github.com/user-attachments/assets/db15e72c-c5c3-45db-80fe-bc91fa796089" />
+
 
 ### 3. 🤖 Modeling
 - Selected Model: **Random Forest**, KMeans, Linear Regression
@@ -410,6 +464,12 @@ Regularly retrain your fraud detection model with new data and confirmed fraud c
 ├── README.md
 └── requirements.txt
 ```
+## 🤝 Acknowledgments
+
+This project is part of the [Zindi Fraud Detection Challenge](https://zindi.africa/), in partnership with **STEG**.
+
+---
+
 ## License
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
