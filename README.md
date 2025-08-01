@@ -458,23 +458,6 @@ Regularly retrain your fraud detection model with new data and confirmed fraud c
 
 ---
 
-## 🗂️ Repository Structure
-
-```bash
-📁 capstone-big-data-project/
-├── data/
-│   └── dataset.csv
-├── notebooks/
-│   └── analysis.ipynb
-├── powerbi/
-│   └── dashboard.pbix
-├── screenshots/
-│   └── dashboard-preview.png
-├── presentation/
-│   └── capstone-presentation.pptx
-├── README.md
-└── requirements.txt
-```
 ## 🤝 Acknowledgments
 
 This project is part of the [Zindi Fraud Detection Challenge](https://zindi.africa/), in partnership with **STEG**.
