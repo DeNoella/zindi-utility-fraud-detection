@@ -61,7 +61,7 @@ Submissions are evaluated on **Zindi** using classification metrics like **ROC-A
 **Source Link:** https://zindi.africa/competitions/fraud-detection-in-electricity-and-gas-consumption-challenge  <br>
 **Number of Rows and Columns:**  test_df ===> (1939730, 20)  train_df ===> (4476749, 21)  <br>
 **Data Structure:** Structured (CSV) <br>
-*Unstructured (Text, Images):* N/A <br>
+**Unstructured (Text, Images):** N/A <br>
 **Data Status:** Requires Preprocessing <br>
 
 ---
