@@ -409,7 +409,18 @@ plt.show()
 - Easy to follow and reproducible
 
 ### 6. 🌟 Innovation
-- [Describe any creative or unique approach you implemented, e.g., ensemble modeling, feature engineering, etc.]
+
+## 📊 Model Performance on Zindi
+ After submitting my predictions to the Fraud Detection in Electricity and Gas Consumption challenge on Zindi, my model achieved a score of 0.80 (80%) on the evaluation metric, which is the Area Under the ROC Curve (AUC).
+
+# What does this mean?
+An AUC score of 0.80 indicates that the model can correctly distinguish between fraudulent and non-fraudulent clients 80% of the time.
+This reflects a strong ability to predict fraud risk, significantly better than random guessing (which would score around 0.5 or 50%).
+
+# Why is this important?
+A high AUC means the utility company can confidently use the model to flag suspicious accounts, helping to reduce losses from fraud and improve resource allocation.
+
+<img width="946" height="419" alt="image" src="https://github.com/user-attachments/assets/7ec29bc5-5075-4b80-8a9f-0f8f600d347d" />
 
 ---
 
